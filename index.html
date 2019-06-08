@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>React Calculator</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+<body>
+    <div id="react-container"></div>
+
+
+    <script type="text/babel">
+        function CharKeys(props) {
+            return(
+                <button className={props.classVal} 
+                onClick={props.onClick} >{props.val} </button>
+            );
+        }
+
+        class Calculator extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    leftVal: "",
+                    rightVal: "",
+                    operatorVal: "",
+                    inputVal: ""
+                }
+            }
+
+            renderKeys(keyVal) {
+                return (
+                    <CharKeys 
+                        val={keyVal} 
+                        classVal={typeof(keyVal)==="number" || keyVal === "."? "numKeys": "signKeys"} onClick={e=> this.renderScreenText(e)}
+                    />
+                );
+            }
+
+            shakalaka(e) {
+                
+            }
+
+            renderScreenText(e) {
+                let buttonLabel = e.target.childNodes[0].data;
+                let classVal = e.target.className;
+                if (buttonLabel === "AC" && classVal === "signKeys") {
+                    this.clearScreen();
+                } else if (classVal === "numKeys" 
+                && this.state.operatorVal === "") {
+                    this.setState({ 
+                        leftVal: this.state.leftVal.trim()+buttonLabel,
+                        inputVal: this.state.inputVal.trim()+buttonLabel
+                    });
+                } else if (classVal === "signKeys" 
+                    && this.state.leftVal != "" && this.state.operatorVal === "") {
+                        this.setState({
+                            operatorVal: buttonLabel,
+                            inputVal: this.state.inputVal+buttonLabel
+                        });
+                        this.solveProb(buttonLabel);
+                        // console.log(res);
+                } else if (classVal === "numKeys" && this.state.operatorVal != "" 
+                    && this.state.leftVal != "") {
+                        this.setState({
+                            rightVal: this.state.rightVal.trim()+buttonLabel,
+                            inputVal: this.state.inputVal.trim()+buttonLabel
+                        });
+                } else if (classVal === "signKeys" && this.state.leftVal != "" 
+                    && this.state.rightVal != "") {
+                        var newVal = this.solveProb();
+                        this.setState({leftVal: newVal});
+                        if (buttonLabel != "=") {
+                            this.setState({
+                                operatorVal: buttonLabel,
+                                inputVal: newVal+buttonLabel
+                            });
+                        } else {
+                            this.setState({inputVal: newVal});
+                        }  
+                }
+                
+            }
+
+            clearScreen() {
+                this.setState({
+                    leftVal: "",
+                    rightVal: "",
+                    operatorVal: "",
+                    inputVal: ""
+                });
+                
+            }
+
+            solveProb(buttonLabel=0) {
+                var left = Number(this.state.leftVal);
+                var right = Number(this.state.rightVal);
+                var sign = this.state.operatorVal;
+                var result;
+                if(left!="" && buttonLabel == "%") {
+                    this.clearScreen()
+                    result = left/100;
+                    this.setState({
+                        leftVal: result,
+                        inputVal: result
+                    });
+                    console.log(left);
+                } else if(left!="" && right!="" && sign!="") {
+                    switch(sign) {
+                        case "+":
+                        result = left+right;
+                        break;
+
+                        case "-":
+                        result = left-right;
+                        break;
+
+                        case "x":
+                        result = left*right;
+                        break;
+
+                        case "/":
+                        result = left/right;
+                        break;
+
+                        default:
+                        result = 0;
+                    }
+                    this.clearScreen()
+                    this.setState({leftVal: result});
+                }
+                
+                return result;
+            }
+
+            render() {
+                return (
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th colSpan="4"><input type="text" className="calcScreen" value={this.state.inputVal} onChange={()=>console.log(value)}/></th>
+                            </tr>
+                            <tr>
+                                <td>{this.renderKeys("AC")}</td>
+                                <td>{this.renderKeys("+/-")}</td>
+                                <td>{this.renderKeys("%")}</td>
+                                <td>{this.renderKeys("/")}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.renderKeys(7)}</td>
+                                <td>{this.renderKeys(8)}</td>
+                                <td>{this.renderKeys(9)}</td>
+                                <td>{this.renderKeys("x")}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.renderKeys(4)}</td>
+                                <td>{this.renderKeys(5)}</td>
+                                <td>{this.renderKeys(6)}</td>
+                                <td>{this.renderKeys("-")}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.renderKeys(1)}</td>
+                                <td>{this.renderKeys(2)}</td>
+                                <td>{this.renderKeys(3)}</td>
+                                <td>{this.renderKeys("+")}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan="2">{this.renderKeys(0)}</td>
+                                <td>{this.renderKeys(".")}</td>
+                                <td>{this.renderKeys("=")}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                ); 
+            }
+        }
+
+        ReactDOM.render(<Calculator />, document.getElementById("react-container"));
+    </script>
+</body>
+</html>

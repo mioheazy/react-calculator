@@ -1,0 +1,29 @@
+.numKeys{
+    background-color: gray;
+}
+.signKeys{
+    background-color: orange;
+}
+.numKeys:hover{
+    background-color: rgb(78, 77, 77);
+}
+.signKeys:hover{
+    background-color: rgb(180, 118, 2);
+}
+.numKeys, .signKeys {
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 2rem;
+    outline: none;
+}
+td[colSpan="2"]>button {
+    width: 4rem;
+}
+.calcScreen {
+    width: 90%;
+    border: none;
+    height: 2rem;
+    font-size: 1rem;
+    text-align: right;
+}
